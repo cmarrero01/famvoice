@@ -12,6 +12,8 @@
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
+    <script src="http://127.0.0.1:9564/socket.io/socket.io.js"></script>
+
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
@@ -20,10 +22,14 @@
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/factories/socket.js"></script>
     <script src="js/controllers.js"></script>
+    <script src="js/controllers/user.js"></script>
+    <script src="js/controllers/playlist.js"></script>
   </head>
 
-  <body ng-app="starter">
+  <body ng-app="famvoice">
     <ion-nav-view></ion-nav-view>
   </body>
 </html>
