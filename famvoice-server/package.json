@@ -1,0 +1,31 @@
+{
+  "name": "famvoice",
+  "version": "0.0.1",
+  "description": "Share your voice, buy voices and listen the famouse share they voices to",
+  "main": "server.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cmarrero01/famvoice.git"
+  },
+  "author": "Claudio A. Marrero",
+  "license": "MIT",
+  "dependencies": {
+    "consolidate": "latest",
+    "express": "latest",
+    "body-parser": "latest",
+    "hogan.js": "latest",
+    "bcrypt-nodejs": "latest",
+    "mailer": "latest",
+    "mongoose": "latest",
+    "mongoose-validate": "latest",
+    "socket.io": "latest",
+    "request": "latest"
+  },
+  "devDependencies": {
+    "should": "^4.0.4",
+    "socket.io-client":"latest"
+  }
+}
