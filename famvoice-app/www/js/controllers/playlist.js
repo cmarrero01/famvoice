@@ -5,16 +5,53 @@
  * @author Claudio A. Marrero
  * @class famvoice.controllers
  */
-app.controller('PlaylistsCtrl', ['$scope',function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
+
+app.controller('PlaylistsCtrl', [
+
+	'$scope',
+	'$account',
+	'$socket',
+
+	function($scope, $account, $socket) {
+
+		/**
+	    * Wait for login for get the list of playlists.
+	    *
+	    * @method OnPlaylists
+	    */
+		$scope.$watch($account.isLogged, function (value, oldValue) {
+		    if(!value) {
+		    	return;
+		    }
+		    $socket.emit('playlists:get',{token: $account.token(), limit: 25, skip:0},OnPlaylists);
+		}, true);
+
+		/**
+	    * Callback for playlist get.
+	    *
+	    * @method OnPlaylists
+	    */
+		function OnPlaylists(data){
+			
+			if(data.code != 200){
+				return;
+			}
+
+			$scope.playlists = data.result;
+		};
+
+		$scope.record = function(){
+			console.log('test');
+		};
 }])
 
-.controller('PlaylistCtrl', ['$scope', '$stateParams',function($scope, $stateParams) {
+.controller('PlaylistCtrl', [
+
+	'$scope', 
+	'$stateParams',
+	'$account',
+	'$socket',
+
+	function($scope, $stateParams, $account, $socket) {
+
 }]);

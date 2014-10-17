@@ -1,0 +1,31 @@
+<ion-view title="Record">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left"class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    <h1>New Record</h1>
+    <form ng-submit="saveRecord()">
+
+    	<label class="item item-input item-stacked-label">
+		    <span class="input-label">Title:</span>
+		    <input type="text" ng-model="record.name" placeholder="Put a name to this record"/>
+	  	</label>
+
+	    <label class="item item-input item-stacked-label">
+		    <span class="input-label">Text of the sound:</span>
+		    <textarea placeholder="Put here the text of the sound recorded." ng-model="record.text"></textarea>
+	  	</label>
+
+	  	<label class="item item-input item-stacked-label">
+		    <span class="input-label">Add some tags:</span>
+		    <tags-input ng-model="record.tags"></tags-input>
+	  	</label>
+	    
+	    <button on-touch="startRecord()" on-release="stopRecord()" class="button button-block button-assertive">Press for Record</button>
+
+	    <label class="item">
+          <button class="button button-block button-positive" type="submit">Save</button>
+        </label>
+  	</form>
+  </ion-content>
+</ion-view>

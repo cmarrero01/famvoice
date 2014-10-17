@@ -1,28 +1,49 @@
 <ion-side-menus>
 
   <ion-pane ion-side-menu-content>
-    <ion-nav-bar class="bar-stable nav-title-slide-ios7">
-      <!--<ion-nav-back-button class="button-clear"><i class="icon ion-ios7-arrow-back"></i> Back</ion-nav-back-button>-->
+
+    <ion-nav-bar class="bar-positive nav-title-slide-ios7">
+      <ion-nav-back-button class="button-clear"><i class="icon ion-ios7-arrow-back"></i> Back</ion-nav-back-button>
     </ion-nav-bar>
+
     <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
+
+    <div class="tabs-striped tabs-background-positive tabs-color-light">
+      <div class="tabs">
+        <a class="tab-item active" href="#/app/record">
+          <i class="icon ion-mic-a"></i>
+          Record
+        </a>
+        <a class="tab-item active" href="#/app/playlists">
+          <i class="icon ion-ios7-pulse"></i>
+          Playlists
+        </a>
+        <a class="tab-item active" href="#/app/requests">
+          <i class="icon ion-ios7-bell"></i>
+          Requests
+        </a>
+      </div>
+    </div>
+
   </ion-pane>
 
   <ion-side-menu side="left">
     <header class="bar bar-header bar-stable">
-      <h1 class="title">Left</h1>
+      <h1 class="title">Menu</h1>
     </header>
     <ion-content class="has-header">
       <ion-list>
-        <ion-item nav-clear menu-close href="#/app/search">
-          Search
+        <ion-item nav-clear menu-close href="#/app/profile">
+          Profile
         </ion-item>
-        <ion-item nav-clear menu-close href="#/app/browse">
-          Browse
+        <ion-item nav-clear menu-close href="#/app/my-requests">
+          My Requests
         </ion-item>
-        <ion-item nav-clear menu-close href="#/app/playlists">
-          Playlists
+        <ion-item nav-clear menu-close href="#/app/settings">
+          Settings
         </ion-item>
       </ion-list>
     </ion-content>
   </ion-side-menu>
 </ion-side-menus>
+

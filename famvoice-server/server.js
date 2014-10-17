@@ -177,6 +177,7 @@ var Famvoice = (function(){
 		_Famvoice.deph.io.on('connection',function(socket){
 			//Put here all that you want listiner. 
 			_Famvoice.user.on(socket);
+			_Famvoice.playlists.on(socket);
 		});
 	}
 

@@ -124,8 +124,9 @@ module.exports = function(params){
 				}
 
 				createToken(socket,userDoc.credentials);
+				socket.user = userDoc;
 
-				if(!isTokenOk(socket,clientToken)){
+				if(!validateSession(socket,clientToken)){
 					if(params.debug)console.log('Login error, totken no valid: ', clientToken);
 					res.code = 500;
 					res.result = {error: 'Token Failed'};
@@ -135,13 +136,12 @@ module.exports = function(params){
 
 				res.code = 200;
 				res.result = userDoc;
-				socket.user = userDoc;
 
 				response(socket,'user:login',fn,res);
 			};
 
 			var query = {credentials:credentials};
-			var fields = "_id name";
+			var fields = "_id credentials name";
 
 			params.Famvoice.user_model.findOne(query,fields,loginCb);
 		}
@@ -176,7 +176,7 @@ module.exports = function(params){
 
 			var registerCb = function(err,userDoc){
 				if(err){
-					if(params.debug)console.log('MOngo eror on register: ', userDoc);
+					if(params.debug)console.log('MOngo eror on register: ', err);
 					res.result = {error:err};
 					response(socket,'user:register',fn,res);
 					return;
@@ -280,7 +280,8 @@ module.exports = function(params){
 
 		return {
 			on:on,
-			response:response
+			response:response,
+			validateSession:validateSession
 		};
 	})();
 

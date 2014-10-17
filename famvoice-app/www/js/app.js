@@ -1,17 +1,28 @@
 /**
- * Init App
+ * Initialization of famvoice app
  * @module famvoice
  * @author Claudio A. Marrero
  * @class famvoice
  */
 
+/**
+ * Angular app, and dependencies.
+ * @property app
+ */
+var app = angular.module('famvoice', ['ionic', 'famvoice.controllers', 'famvoice.services', 'ngTagsInput']);
 
-var app = angular.module('famvoice', ['ionic', 'famvoice.controllers', 'famvoice.services']);
-
+/**
+ * Module of services.
+ * @property services
+ */
 var services = angular.module('famvoice.services', []);
 
-app
-.run(function($ionicPlatform) {
+/**
+ * Intial run of the aplication.
+ * @method run
+ */
+app.run(function($ionicPlatform) {
+
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -20,7 +31,13 @@ app
       StatusBar.styleDefault();
     }
   });
+
 })
+
+/**
+ * Configurations of routes, uis, and controllers dependecies.
+ * @method config
+ */
 .config(function($stateProvider, $urlRouterProvider) {
 
   $stateProvider
@@ -28,33 +45,43 @@ app
     .state('app', {
       url: "/app",
       abstract: true,
-      templateUrl: "templates/menu.html"
+      templateUrl: "templates/menu.html",
+      controller: "UserCtrl"
     })
 
-    .state('app.login', {
-      url: "/login",
+    .state('app.record', {
+      url: "/record",
       views: {
         'menuContent' :{
-          templateUrl: "templates/login.html",
-          controller: 'UserCtrl'
+          templateUrl: "templates/record.html",
+          controller: 'RecordCtrl'
         }
       }
     })
 
-    .state('app.search', {
-      url: "/search",
+    .state('app.profile', {
+      url: "/profile",
       views: {
         'menuContent' :{
-          templateUrl: "templates/search.html"
+          templateUrl: "templates/profile.html"
         }
       }
     })
 
-    .state('app.browse', {
-      url: "/browse",
+    .state('app.MyRequests', {
+      url: "/my-requests",
       views: {
         'menuContent' :{
-          templateUrl: "templates/browse.html"
+          templateUrl: "templates/my-requests.html"
+        }
+      }
+    })
+
+    .state('app.requests', {
+      url: "/requests",
+      views: {
+        'menuContent' :{
+          templateUrl: "templates/requests.html"
         }
       }
     })
@@ -79,6 +106,6 @@ app
       }
     });
 
-  $urlRouterProvider.otherwise('/app/login');
+  $urlRouterProvider.otherwise('/app/playlists');
 });
 
