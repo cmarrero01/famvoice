@@ -112,6 +112,15 @@ var Famvoice = (function(){
 	var _bodyParser = require('body-parser')
 
 	/**
+	* Socket Streaming
+	*
+	* @property _ss
+	* @type {Object}
+	* @private
+	*/
+	var _ss = require('socket.io-stream');
+
+	/**
 	* Instance of express
 	*
 	* @property _app
@@ -148,6 +157,7 @@ var Famvoice = (function(){
 		var _params = {
 			mongoose:_mongoose,
 			io:_io,
+			ss:_ss,
 			validate:_validate,
 			bCrypt:_bCrypt,
 			fs:_fs,

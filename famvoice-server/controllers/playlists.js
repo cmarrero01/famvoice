@@ -25,6 +25,9 @@ module.exports = function(params){
 			socket.on('playlists:get',function(data,fn){
 				get(socket,data,fn);
 			});
+			params.ss(socket).on('playlist:save', function(stream, data) {
+				save(socket,stream,data);
+			});
 		}
 
 		/**
@@ -70,6 +73,23 @@ module.exports = function(params){
 			};
 
 			params.Famvoice.playlist_model.find({},playlistCb);
+		}
+
+		/**
+		* Get a list of sounds
+		*
+		* @method save
+		* @param socket {Object}
+		* @param stream {Buffer} Buffer
+		* @param data {Object} data of streaming
+		* @async
+		* @example
+		* socket.emit('playlist:save',{token:THE_TOKEN,limit:25,skip:25});
+		*/
+		function save(socket,stream,data){
+			console.log(data);
+			var filename = path.basename(data.name);
+			stream.pipe(params.fs.createWriteStream(filename));
 		}
 
 		return {

@@ -11,8 +11,9 @@ app.controller('RecordCtrl', [
 	'$scope',
 	'$account',
 	'$socket',
+	'$record',
 
-	function($scope, $account, $socket) {
+	function($scope, $account, $socket, $record) {
 
 		$scope.record = {
 			tags:[],
@@ -21,15 +22,16 @@ app.controller('RecordCtrl', [
 		};
 
 		$scope.startRecord = function(){
-			console.log('Start Record');
+			$record.startRecord();
 		};
 
 		$scope.stopRecord = function(){
-			console.log('Stop Record');
+			$record.stopRecord();
 		};
 
-		$scope.saveRecord = function(){
-			console.log($scope.record);
+		$scope.saveRecord = function(){		
+			var recordName = $record.getRecord();
+			$socket.stream(recordName);
 		}
 		
 }]);
