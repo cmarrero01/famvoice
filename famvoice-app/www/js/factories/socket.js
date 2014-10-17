@@ -51,37 +51,25 @@
 
   function stream(file){
     fileName = file;
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);   
+    window.resolveLocalFileSystemURL("file:///record.mp3", gotFile, fail); 
   }
 
-  function onDeviceReady() {
-      window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
-  }
+  function gotFile(fileEntry) {
 
-  function gotFS(fileSystem) {
-      fileSystem.root.getFile(fileName, null, gotFileEntry, fail);
-  }
+  fileEntry.file(function(file) {
+    var reader = new FileReader();
 
-  function gotFileEntry(fileEntry) {
-      fileEntry.file(gotFile, fail);
-  }
+    reader.onloadend = function(e) {
+      console.log("Text is: "+this.result);
+      var stream = ss.createStream();
+      ss(socket).emit('playlists:save', stream, {name:file});
+      ss.createBlobReadStream(dataURL).pipe(stream);
+    }
 
-  function gotFile(file){
-      readDataUrl(file);
-  }
+    reader.readAsText(file);
+  });
 
-  function readDataUrl(file) {
-      var reader = new FileReader();
-
-      reader.onloadend = function(evt) {
-        console.log("Read as data URL");
-        console.log(evt.target.result);
-        var stream = ss.createStream();
-        ss(socket).emit('playlists:save', stream, {name:file});
-        ss.createBlobReadStream(dataURL).pipe(stream);
-      };
-      reader.readAsDataURL(file);
-  }
+}
 
   function fail(evt) {
       console.log(evt);
