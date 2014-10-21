@@ -6,98 +6,94 @@
  */
  services.factory('$socket', [
 
-  '$rootScope', 
+  '$rootScope',
 
   function($rootScope) {
 
-  /**
-  * Socket.io property, have all methods and propertios of socket.io
-  *
-  * @property socket
-  * @private
-  */
-  var socket = io.connect('http://192.168.0.2:9564');
+    var socketId = socket.io.engine.id;
 
-  var fileName = "";
-
-  /**
-  * Listen some messages from the server
-  *
-  * @method on
-  */
-  function on(eventName, callback){
-    socket.on(eventName, function () {  
-      var args = arguments;
-      $rootScope.$apply(function () {
-        callback.apply(socket, args);
-      });
+    socket.on('connect',function(){
+      socketId = socket.io.engine.id;
     });
-  }
 
-  /**
-  * Send messages to the server, if send the acknowleage, when
-  * is recived is fired.
-  *
-  * @method emit
-  */
-  function emit(eventName, data, callback){
-    socket.emit(eventName, data, function () {  
-      var args = arguments;
-      $rootScope.$apply(function () {
-        callback.apply(socket, args);
-      });
+    socket.on('error',function(err){
+      console.log(err);
     });
-  }
 
-  function stream(file){
-    fileName = file;
-    window.resolveLocalFileSystemURL("file:///record.mp3", gotFile, fail); 
-  }
+    socket.on('reconnect',function(){
+      socketId = socket.io.engine.id;
+      var credentials = localStorage.getItem('credentials');
+      var token = base64_encode(socketId+credentials);
 
-  function gotFile(fileEntry) {
+      socket.emit('user:login', { 
+        credentials: credentials, 
+        token:token
+      }, OnAutoLogin);
 
-  fileEntry.file(function(file) {
-    var reader = new FileReader();
+    });
 
-    reader.onloadend = function(e) {
-      console.log("Text is: "+this.result);
-      var stream = ss.createStream();
-      ss(socket).emit('playlists:save', stream, {name:file});
-      ss.createBlobReadStream(dataURL).pipe(stream);
+    /**
+    * Auto login after reconexcion.
+    *
+    * @method OnAutoLogin
+    */
+    function OnAutoLogin(result){
+      if(result.code !== 200){
+        return;
+      }
     }
 
-    reader.readAsText(file);
-  });
+    /**
+    * Listen some messages from the server
+    *
+    * @method on
+    */
+    function on(eventName, callback){
+      socket.on(eventName, function () {  
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    }
 
-}
+    /**
+    * Send messages to the server, if send the acknowleage, when
+    * is recived is fired.
+    *
+    * @method emit
+    */
+    function emit(eventName, data, callback){
+      socket.emit(eventName, data, function () {  
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    }
 
-  function fail(evt) {
-      console.log(evt);
-  }
+    /**
+    * Get the ID of socket.io session.
+    *
+    * @method id
+    */
+    function id(){
+      return socketId;
+    }
 
-  /**
-  * Get the ID of socket.io session.
-  *
-  * @method id
-  */
-  function id(){
-    return socket.io.engine.id;
-  }
-
-  /**
-  * Get the ID of socket.io session.
-  *
-  * @method id
-  */
-  function expose(){
-    return socket;
-  }
+    /**
+    * Get the ID of socket.io session.
+    *
+    * @method id
+    */
+    function expose(){
+      return socket;
+    }
 
   return {
     on: on,
     emit: emit,
     id:id,
-    expose:expose,
-    stream:stream
+    expose:expose
   };
 }]);

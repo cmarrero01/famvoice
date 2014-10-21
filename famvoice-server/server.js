@@ -105,21 +105,20 @@ var Famvoice = (function(){
 	/**
 	* Express module to public some endpoints from http
 	*
-	* @property _express
+	* @property _bodyParser
 	* @type {Object}
 	* @private
 	*/
-	var _bodyParser = require('body-parser')
+	var _bodyParser = require('body-parser');
 
 	/**
-	* Socket Streaming
+	* Binary js to streaming audio
 	*
-	* @property _ss
+	* @property _BinaryServer
 	* @type {Object}
 	* @private
 	*/
-	var _ss = require('socket.io-stream');
-
+	var _BinaryServer = require('binaryjs').BinaryServer;
 	/**
 	* Instance of express
 	*
@@ -132,10 +131,10 @@ var Famvoice = (function(){
 	_app.engine('html', _cons.hogan);
 	_app.set('view engine', 'html');
 	_app.set('views', __dirname + '/tpl');
-	_app.use(_bodyParser.urlencoded({ extended: false }));
+	_app.use(_bodyParser.urlencoded({ extended: true }));
 	_app.use(_bodyParser.json());
 	_app.use('/',_express.static('../famvoice-app/www/'));
-	_app.listen(8080);
+	_app.listen(80);
 
 	/**
 	* This method make the initialization of all Famvoice server, 
@@ -147,6 +146,7 @@ var Famvoice = (function(){
 	function init(){
 
 		var _io = require('socket.io')();
+		var _stream = _BinaryServer({port: 9000});
 
 		_io.use(function(socket, next) {
 			next();
@@ -157,7 +157,6 @@ var Famvoice = (function(){
 		var _params = {
 			mongoose:_mongoose,
 			io:_io,
-			ss:_ss,
 			validate:_validate,
 			bCrypt:_bCrypt,
 			fs:_fs,
@@ -167,7 +166,8 @@ var Famvoice = (function(){
 			crypto:_crypto,
 			app:_app,
 			express:_express,
-			debug:Debug.debug
+			debug:Debug.debug,
+			stream:_stream
 		};
 
 		var _loader = require('./load.js')(_params);
@@ -188,6 +188,11 @@ var Famvoice = (function(){
 			//Put here all that you want listiner. 
 			_Famvoice.user.on(socket);
 			_Famvoice.playlists.on(socket);
+		});
+		_Famvoice.deph.stream.on('connection', function(client){
+		    var file = _fs.createReadStream("./records/544572a7c163fc440f45b4c71413927760147record-2.mp3");
+		    console.log(file);
+  			client.send(file);
 		});
 	}
 

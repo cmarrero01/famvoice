@@ -10,15 +10,25 @@
     <link href="lib/ng-tags-input.bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
-
-    <script src="http://192.168.0.2:9564/socket.io/socket.io.js"></script>
-    <script src="lib/socket.io-stream.js"></script>
+    <script src="lib/binary.js"></script>
+    <script src="http://192.168.1.37:9564/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+          /**
+          * Socket.io property, have all methods and propertios of socket.io
+          *
+          * @property socket
+          * @private
+          */
+          var socket = io.connect('http://192.168.1.37:9564',
+            {'sync disconnect on unload' : true});
+    </script>
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ng-tags-input.min.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <script src="cordova.js"></script>
 
     <!-- your app's js -->
@@ -26,6 +36,7 @@
     <script src="js/util.js"></script>
     <script src="js/factories/account.js"></script>
     <script src="js/factories/socket.js"></script>
+    <script src="js/factories/stream.js"></script>
     <script src="js/factories/record.js"></script>
     <script src="js/controllers.js"></script>
     <script src="js/controllers/user.js"></script>

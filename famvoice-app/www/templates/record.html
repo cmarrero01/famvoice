@@ -4,10 +4,22 @@
   </ion-nav-buttons>
   <ion-content class="has-header">
     <h1>New Record</h1>
-    <form ng-submit="saveRecord()">
+    
+    <button ng-show="startRecordBtn" on-touch="startRecord()" class="button button-block icon-left ion-record button-assertive"><strong>RECORD</strong></button>
+
+    <button ng-show="stopRecordBtn" on-touch="stopRecord()" class="button button-block icon-left ion-stop button-energized ng-hide"><strong>STOP RECORD</strong></button>
+
+    <button ng-show="playRecordBtn" on-touch="playRecord()" class="button button-block icon-left ion-play button-calm ng-hide"><strong>PLAY RECORD</strong></button>
+
+    <div ng-show="playRecordBtn" class="button-bar">
+	  <a class="button button-balanced" on-touch="showSaveForm()">SAVE FILE</a>
+	  <a class="button button-assertive" on-touch="recordAgain()">RECORD AGAIN</a>
+	</div>
+
+    <form ng-submit="saveRecord()" ng-show="saveRecordBtn">
 
     	<label class="item item-input item-stacked-label">
-		    <span class="input-label">Title:</span>
+		    <span class="input-label">Name:</span>
 		    <input type="text" ng-model="record.name" placeholder="Put a name to this record"/>
 	  	</label>
 
@@ -21,8 +33,6 @@
 		    <tags-input ng-model="record.tags"></tags-input>
 	  	</label>
 	    
-	    <button on-touch="startRecord()" on-release="stopRecord()" class="button button-block button-assertive">Press for Record</button>
-
 	    <label class="item">
           <button class="button button-block button-positive" type="submit">Save</button>
         </label>

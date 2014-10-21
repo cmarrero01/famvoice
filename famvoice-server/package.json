@@ -22,7 +22,6 @@
     "mongoose": "latest",
     "mongoose-validate": "latest",
     "socket.io": "latest",
-    ""socket.io-stream": "latest",
     "request": "latest"
   },
   "devDependencies": {

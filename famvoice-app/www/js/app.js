@@ -9,7 +9,7 @@
  * Angular app, and dependencies.
  * @property app
  */
-var app = angular.module('famvoice', ['ionic', 'famvoice.controllers', 'famvoice.services', 'ngTagsInput']);
+var app = angular.module('famvoice', ['ionic', 'ngCordova','famvoice.controllers', 'famvoice.services', 'ngTagsInput']);
 
 /**
  * Module of services.

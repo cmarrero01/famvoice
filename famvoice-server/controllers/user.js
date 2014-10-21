@@ -124,6 +124,7 @@ module.exports = function(params){
 				}
 
 				createToken(socket,userDoc.credentials);
+
 				socket.user = userDoc;
 
 				if(!validateSession(socket,clientToken)){

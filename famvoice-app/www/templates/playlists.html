@@ -4,8 +4,9 @@
   </ion-nav-buttons>
   <ion-content class="has-header">
     <ion-list>
-      <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
-        {{playlist.title}}
+      <ion-item class="icon-right ion-play" ng-repeat="playlist in playlists" on-touch="play('{{playlist._id}}')">
+        {{playlist.name}}
+        
       </ion-item>
     </ion-list>
   </ion-content>

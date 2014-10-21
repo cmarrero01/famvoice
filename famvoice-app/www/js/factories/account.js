@@ -4,100 +4,131 @@
  * @author Claudio A. Marrero
  * @class famvoice
  */
- services.factory('$account', ['$rootScope', '$socket', function($rootScope, $socket) {
+ services.factory('$account', [
 
-  /**
-  * Credentials that are stored on the device
-  *
-  * @property credentials
-  * @private
-  */
-  var credentials = localStorage.getItem('credentials');
+  '$rootScope', 
+  '$socket', 
 
-  /**
-  * UserId that are stored on the device
-  *
-  * @property userId
-  * @private
-  */
-  var userId = localStorage.getItem('userId');
+  function($rootScope, $socket) {
 
-  /**
-  * Flag to detect if the user is loged or not.
-  *
-  * @property _isLoged
-  * @private
-  */
-  var _isLoged = false;
+    /**
+    * Credentials that are stored on the device
+    *
+    * @property credentials
+    * @private
+    */
+    var credentials = localStorage.getItem('credentials');
 
-  /**
-  * Check if the user is registered.
-  *
-  * @method isRegister
-  */
-  function isRegister(){
-    return (userId)?true:false;
-  }
+    /**
+    * UserId that are stored on the device
+    *
+    * @property userId
+    * @private
+    */
+    var userId = localStorage.getItem('userId');
 
-  /**
-  * Get credentials encripted from localStorage
-  *
-  * @method getCredentials
-  */
-  function getCredentials(){
-    if(!credentials){
-      return null;
+    /**
+    * Flag to detect if the user is loged or not.
+    *
+    * @property _isLoged
+    * @private
+    */
+    var _isLoged = false;
+
+    /**
+    * Check if the user is registered.
+    *
+    * @method isRegister
+    */
+    function isRegister(){
+      return (userId)?true:false;
     }
 
-    return credentials;
-  }
+    /**
+    * Get credentials encripted from localStorage
+    *
+    * @method getCredentials
+    */
+    function getCredentials(){
+      if(!credentials){
+        return null;
+      }
 
-  /**
-  * Create a token based on credentials and socket.io session.
-  *
-  * @method token
-  */
-  function token(){
-    if(!credentials){
-      return null;
+      return credentials;
     }
 
-    return base64_encode($socket.id()+credentials);
-  }
+    /**
+    * Create a token based on credentials and socket.io session.
+    *
+    * @method token
+    */
+    function token(){
 
-  /**
-  * Get the user Id that have the device.
-  *
-  * @method userId
-  */
-  function getUserId(){
-    return userId;
-  }
+      if(!credentials){
+        return null;
+      }
 
-  /**
-  * Get the user Id that have the device.
-  *
-  * @method userId
-  */
-  function isLogged(){
-    return _isLoged;
-  }
+      return base64_encode($socket.id()+credentials);;
+    }
 
-  /**
-  * Set that the user is loged
-  *
-  * @method userId
-  */
-  function setLogged(){
-    _isLoged = true;
-  }
+    /**
+    * Get the user Id that have the device.
+    *
+    * @method userId
+    */
+    function getUserId(){
+      return userId;
+    }
 
-  return {
-    isRegister: isRegister,
-    getCredentials: getCredentials,
-    token:token,
-    getUserId:getUserId,
-    setLogged:setLogged,
-    isLogged:isLogged
-  };
+    /**
+    * Get the user Id that have the device.
+    *
+    * @method userId
+    */
+    function isLogged(){
+      return _isLoged;
+    }
+
+    /**
+    * Set that the user is loged
+    *
+    * @method userId
+    */
+    function setLogged(){
+      _isLoged = true;
+    }
+
+    /**
+    * Make autologin when the user is reconnected
+    *
+    * @method autoLogin
+    */
+    function autoLogin(){
+
+      if(!credentials){
+        return null;
+      }
+
+      $socket.emit('user:login', { credentials: credentials, token:token()}, OnAutoLogin);
+    }
+
+    /**
+    * Callback for autologin on $account
+    *
+    * @method OnAutoLogin
+    */
+    function OnAutoLogin(result){
+      console.log('AUTOLOGIN TRUE');
+      setLogged();
+    }
+
+    return {
+      isRegister: isRegister,
+      getCredentials: getCredentials,
+      token:token,
+      getUserId:getUserId,
+      setLogged:setLogged,
+      isLogged:isLogged,
+      login:autoLogin
+    };
 }]);

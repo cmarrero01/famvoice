@@ -11,8 +11,9 @@ app.controller('PlaylistsCtrl', [
 	'$scope',
 	'$account',
 	'$socket',
+	'$stream',
 
-	function($scope, $account, $socket) {
+	function($scope, $account, $socket, $stream) {
 
 		/**
 	    * Wait for login for get the list of playlists.
@@ -32,16 +33,33 @@ app.controller('PlaylistsCtrl', [
 	    * @method OnPlaylists
 	    */
 		function OnPlaylists(data){
-			
 			if(data.code != 200){
 				return;
 			}
-
 			$scope.playlists = data.result;
 		};
 
-		$scope.record = function(){
-			console.log('test');
+		$scope.play = function(recordId){
+			var stream = new BinaryClient('ws://192.168.1.37:9000');
+			stream.on('stream', function(file, meta){ 
+		        console.log('STRAMING');
+		        var parts = [];
+
+		        file.on('data', function(data){
+		          console.log('STRAMING DATA RECIVED',data);
+		          parts.push(data);
+		        });
+
+		        file.on('end', function(){
+		          console.log('END AND PLAY');
+		          console.log(parts);
+		          console.log(window.webkitURL);
+		          var audioUrl = window.webkitURL.createObjectURL(new Blob(parts));
+		          console.log(audioUrl);
+		          var myaudio = new Audio(audioUrl);
+		          myaudio.play();
+		        });
+		      });
 		};
 }])
 

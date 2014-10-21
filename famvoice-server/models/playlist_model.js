@@ -21,9 +21,10 @@ module.exports = function(params){
     */
     var playlistSchema = new params.mongoose.Schema({
         user:{ type: params.mongoose.Schema.Types.ObjectId, ref:'user'},
-        title:{ type: String},
+        name:{ type: String},
         text:{ type: String},
-        file:{ type: String}
+        file:{ type: String},
+        tags:{ type: Array}
     });
 
     playlistSchema.index({text: "text", title: "text"});

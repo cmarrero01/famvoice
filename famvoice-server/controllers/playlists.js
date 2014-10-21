@@ -15,6 +15,8 @@ module.exports = function(params){
 
 	var Playlists = (function(){
 
+		var sock = null;
+
 		/**
 		* Listen the user sockets events.
 		*
@@ -22,11 +24,14 @@ module.exports = function(params){
 		* @param socket {Object} Connection of socket.io
 		*/
 		function on(socket){
+
+			sock = socket;
+
 			socket.on('playlists:get',function(data,fn){
 				get(socket,data,fn);
 			});
-			params.ss(socket).on('playlist:save', function(stream, data) {
-				save(socket,stream,data);
+			socket.on('playlists:file',function(data,fn){
+				record(socket,data,fn);
 			});
 		}
 
@@ -76,20 +81,92 @@ module.exports = function(params){
 		}
 
 		/**
-		* Get a list of sounds
+		* Get file for straming
 		*
-		* @method save
+		* @method stream
+		* @param file {String}
+		*/
+		function stream(file){
+			var file = params.Famvoice.fs.createReadStream("./records/"+file);
+ 			client.send(file); 
+		}
+
+		/**
+		* Save a new record
+		*
+		* @method record
 		* @param socket {Object}
-		* @param stream {Buffer} Buffer
-		* @param data {Object} data of streaming
+		* @param data {Object} Buffer
+		* @param fn {Object} Acknowleage
 		* @async
 		* @example
-		* socket.emit('playlist:save',{token:THE_TOKEN,limit:25,skip:25});
+		* socket.emit('playlist:file',{token:THE_TOKEN,limit:25,skip:25});
 		*/
-		function save(socket,stream,data){
-			console.log(data);
-			var filename = path.basename(data.name);
-			stream.pipe(params.fs.createWriteStream(filename));
+		function record(socket,data,fn){
+
+			var res = {
+				code:400,
+				result:null
+			};
+
+			var token = data.token;
+
+			if(!params.Famvoice.user.validateSession(socket,token)){
+				if(params.debug)console.log('Error geting playlist, token error: ', token);
+				res.code = 500;
+				res.result = {error:"Token is not valid"};
+				params.Famvoice.user.response(socket,'playlists:file',fn,res);
+				return;
+			}
+
+			var binaryData  =   new Buffer(data.file, 'base64').toString('binary');
+			
+			var now = new Date().getTime();
+			var recordName = socket.user._id+now+data.name;
+
+			params.fs.writeFile("./records/"+recordName, binaryData, "binary", function (err) {
+			    
+			    if(err){
+			    	if(params.debug)console.log('Error saving the new record');
+			    	params.Famvoice.user.response(socket,'playlists:file',fn,res);
+			    	return;
+			    }
+
+			    saveRecord(recordName,data.info);
+
+			    res.code = 200;
+			    res.result = {};
+			    console.log(res);
+			    params.Famvoice.user.response(socket,'playlists:file',fn,res);
+			});
+		}
+
+		/**
+		* Save new record on database
+		*
+		* @method saveRecord
+		* @param name {String}
+		* @param info {Object} Info data about the file
+		* @async
+		*/
+		function saveRecord(name,info){
+			
+			var playlistSave = {
+				user: sock.user._id,
+		        name: info.name,
+		        text: info.text,
+		        file: name,
+		        tags: info.tags
+			};
+
+			var playlistCb = function(err,playlistDoc){
+				if(err){
+			    	if(params.debug)console.log('Error saving the new record');
+			    	return;
+			    }
+			};
+
+			params.Famvoice.playlist_model.create(playlistSave,playlistCb);
 		}
 
 		return {
