@@ -17,6 +17,10 @@ module.exports = function(params){
 
 		var sock = null;
 
+		function init(){
+			params.app.get('/record/:userId/:playListId/:recordName',play);
+		}
+
 		/**
 		* Listen the user sockets events.
 		*
@@ -24,8 +28,6 @@ module.exports = function(params){
 		* @param socket {Object} Connection of socket.io
 		*/
 		function on(socket){
-
-			sock = socket;
 
 			socket.on('playlists:get',function(data,fn){
 				get(socket,data,fn);
@@ -81,14 +83,43 @@ module.exports = function(params){
 		}
 
 		/**
-		* Get file for straming
+		* Play streaming record
 		*
-		* @method stream
-		* @param file {String}
+		* @method play
+		* @param req {Object}
+		* @param res {Object} Buffer
 		*/
-		function stream(file){
-			var file = params.Famvoice.fs.createReadStream("./records/"+file);
- 			client.send(file); 
+		function play(req,res){
+			
+			var userId = req.params.userId;
+			var playListId = req.params.playListId;
+			var recordName = req.params.recordName;
+
+			if(!userId || !playListId || !recordName){
+				res.end();
+				return;
+			}
+
+			var path = "./records/"+recordName;
+
+			if (!params.fs.existsSync(path)) {
+				res.end();
+			    return;
+			}
+			
+			/*var playlistCb = function(err,playDoc){
+				if(err || !playDoc){
+					res.end();
+					return;
+				}
+				var fileName = playDoc.file;
+			};
+			params.Famvoice.playlist_model.findById(playListId,playlistCb);*/
+
+			res.setHeader("content-type", "audio/mpeg");
+    		params.fs.createReadStream(path).pipe(res);
+
+    		console.log('Streaming'+recordName);
 		}
 
 		/**
@@ -111,13 +142,13 @@ module.exports = function(params){
 
 			var token = data.token;
 
-			if(!params.Famvoice.user.validateSession(socket,token)){
-				if(params.debug)console.log('Error geting playlist, token error: ', token);
-				res.code = 500;
-				res.result = {error:"Token is not valid"};
-				params.Famvoice.user.response(socket,'playlists:file',fn,res);
-				return;
-			}
+			// if(!params.Famvoice.user.validateSession(socket,token)){
+			// 	if(params.debug)console.log('Error geting playlist, token error: ', token);
+			// 	res.code = 500;
+			// 	res.result = {error:"Token is not valid"};
+			// 	params.Famvoice.user.response(socket,'playlists:file',fn,res);
+			// 	return;
+			// }
 
 			var binaryData  =   new Buffer(data.file, 'base64').toString('binary');
 			
@@ -132,11 +163,10 @@ module.exports = function(params){
 			    	return;
 			    }
 
-			    saveRecord(recordName,data.info);
+			    saveRecord(socket,recordName,data.info);
 
 			    res.code = 200;
 			    res.result = {};
-			    console.log(res);
 			    params.Famvoice.user.response(socket,'playlists:file',fn,res);
 			});
 		}
@@ -149,10 +179,10 @@ module.exports = function(params){
 		* @param info {Object} Info data about the file
 		* @async
 		*/
-		function saveRecord(name,info){
+		function saveRecord(socket,name,info){
 			
 			var playlistSave = {
-				user: sock.user._id,
+				user: socket.user._id,
 		        name: info.name,
 		        text: info.text,
 		        file: name,
@@ -170,9 +200,12 @@ module.exports = function(params){
 		}
 
 		return {
-			on:on
+			on:on,
+			init:init
 		};
 	})();
+
+	Playlists.init();
 
 	return Playlists;
 		
